@@ -1,5 +1,13 @@
 const pool = require(`../db`);
 
+async function getAllDB() {
+    const client = await pool.connect();
+
+    const sql = `SELECT * FROM users`
+    const data = (await client.query(sql)).rows;
+
+    return data;
+}
 
 async function createUserDB(name, surname, email, pwd) {
     const client = await pool.connect();
@@ -20,4 +28,16 @@ async function createUserDB(name, surname, email, pwd) {
     }
 }
 
-module.exports = { createUserDB }
+async function getUserByEmailDB(email) {
+    const client = await pool.connect();
+    const sql = `SELECT * FROM users WHERE email = $1`;
+    const data = (await client.query(sql, [email])).rows;
+
+    return data;
+}
+
+
+
+
+
+module.exports = { getAllDB, createUserDB, getUserByEmailDB }
