@@ -1,43 +1,39 @@
 const pool = require(`../db`);
 
 async function getAllDB() {
-    const client = await pool.connect();
+  const client = await pool.connect();
 
-    const sql = `SELECT * FROM users`
-    const data = (await client.query(sql)).rows;
+  const sql = `SELECT * FROM users`;
+  const data = (await client.query(sql)).rows;
 
-    return data;
+  return data;
 }
 
 async function createUserDB(name, surname, email, pwd) {
-    const client = await pool.connect();
-    try {
-        await client.query(`BEGIN`);
+  const client = await pool.connect();
+  try {
+    await client.query(`BEGIN`);
 
-        const sql = `INSERT INTO users (name, surname, email, pwd)
+    const sql = `INSERT INTO users (name, surname, email, pwd)
         VALUES ($1, $2, $3, $4)
-        RETURNING *`
-        const data = (await client.query(sql, [name, surname, email, pwd])).rows;
+        RETURNING *`;
+    const data = (await client.query(sql, [name, surname, email, pwd])).rows;
 
-        await client.query(`COMMIT`);
-        return data
-    } catch (error) {
-        await client.query(`ROLLBACK`);
-        console.log(`createUserDB: ${error.message}`);
-        return [];
-    }
+    await client.query(`COMMIT`);
+    return data;
+  } catch (error) {
+    await client.query(`ROLLBACK`);
+    console.log(`createUserDB: ${error.message}`);
+    return [];
+  }
 }
 
 async function getUserByEmailDB(email) {
-    const client = await pool.connect();
-    const sql = `SELECT * FROM users WHERE email = $1`;
-    const data = (await client.query(sql, [email])).rows;
+  const client = await pool.connect();
+  const sql = `SELECT * FROM users WHERE email = $1`;
+  const data = (await client.query(sql, [email])).rows;
 
-    return data;
+  return data;
 }
 
-
-
-
-
-module.exports = { getAllDB, createUserDB, getUserByEmailDB }
+module.exports = { getAllDB, createUserDB, getUserByEmailDB };

@@ -4,36 +4,35 @@ const { getAllDB, createUserDB, getUserByEmailDB } = require(`../repository/user
 const salt = 10;
 
 async function getAll() {
-    const data = await getAllDB();
-    if (!data.length) throw new Error(`DB is empty`);
+  const data = await getAllDB();
+  if (!data.length) throw new Error(`DB is empty`);
 
-    return data;
+  return data;
 }
 
 async function createUser(name, surname, email, pwd) {
-    const findUser = await getUserByEmailDB(email);
-    if (findUser.length) throw new Error(`user already exist`);
+  const findUser = await getUserByEmailDB(email);
+  if (findUser.length) throw new Error(`user already exist`);
 
-    const hashPwd = await bcrypt.hash(pwd, salt);
+  const hashPwd = await bcrypt.hash(pwd, salt);
 
-    const data = await createUserDB(name, surname, email, hashPwd);
-    if (!data.length) throw new Error(`not created`);
+  const data = await createUserDB(name, surname, email, hashPwd);
+  if (!data.length) throw new Error(`not created`);
 
-    return data;
+  return data;
 }
 
 async function authorizationUser(email, pwd) {
-    const findUser = await getUserByEmailDB(email);
-    if (!findUser.length) throw new Error(`user not found`);
+  const findUser = await getUserByEmailDB(email);
+  if (!findUser.length) throw new Error(`user not found`);
 
-    const hashPwd = findUser[0].pwd;
+  const hashPwd = findUser[0].pwd;
 
-    const isMatch = await bcrypt.compare(pwd, hashPwd);
+  const isMatch = await bcrypt.compare(pwd, hashPwd);
 
-    if (!isMatch) throw new Error(`pwd not match`);
+  if (!isMatch) throw new Error(`pwd not match`);
 
-    return findUser
+  return findUser;
 }
 
-
-module.exports = { getAll, createUser, authorizationUser }
+module.exports = { getAll, createUser, authorizationUser };
